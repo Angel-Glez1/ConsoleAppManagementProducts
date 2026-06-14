@@ -1,5 +1,5 @@
 ﻿using AdmiProducts.Models;
-using AdmiProducts.Repositories;
+using AdmiProducts.Repositories.interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,9 +17,9 @@ namespace AdmiProducts.Services
             _repository = repository;
         }
 
-        public IEnumerable<Product> getAllProducts()
+        public async Task<List<Product>> getAllProducts()
         {
-            return _repository.FindAll();
+            return await _repository.FindAll();
         }
 
 

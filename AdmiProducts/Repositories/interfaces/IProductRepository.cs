@@ -3,11 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AdmiProducts.Repositories
+namespace AdmiProducts.Repositories.interfaces
 {
     public interface IProductRepository
     {
-        IEnumerable<Product> FindAll();
+        Task<List<Product>> FindAll();
+        
         Task<Product?> FindById(int id);
         Task Create(Product product);
         Task Update(Product product);

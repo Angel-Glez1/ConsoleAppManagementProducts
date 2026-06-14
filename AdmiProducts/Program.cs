@@ -1,5 +1,6 @@
 ﻿using AdmiProducts.Controllers;
 using AdmiProducts.Repositories;
+using AdmiProducts.Repositories.interfaces;
 using AdmiProducts.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,9 @@ var services = new ServiceCollection();
 
 // 3. Registrar el repositorio: cuando alguien pida IProductoRepository el contenedor entrega un ProductoRepository
 services.AddTransient<IProductRepository>(_ => new ProductRepository(connectionString));
+services.AddTransient<IUserRepository>(_ => new UserRepository(connectionString));
 services.AddTransient<ProductService>();
+services.AddTransient<UserService>();
 services.AddTransient<MenuController>();
 
 
@@ -28,4 +31,4 @@ using ServiceProvider provider = services.BuildServiceProvider();
 
 // 5. Solicitar una instancia del MenuController al provider y iniciar la app
 var menuController = provider.GetRequiredService<MenuController>();
-menuController.Start();
+await menuController.Start();

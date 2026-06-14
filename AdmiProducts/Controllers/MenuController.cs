@@ -1,4 +1,7 @@
-﻿using AdmiProducts.Services;
+﻿using AdmiProducts.Exceptions;
+using AdmiProducts.Models;
+using AdmiProducts.Services;
+using AdmiProducts.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,33 +12,65 @@ namespace AdmiProducts.Controllers
     {
 
         private readonly ProductService _productService;
+        private readonly UserService _userService;
 
-        public MenuController(ProductService service)
+        public MenuController(ProductService productService, UserService userService)
         {
-            _productService = service;
+            _productService = productService;
+            _userService = userService;
         }
 
 
 
-        public void Start()
+        public async Task Start()
         {
             try
             {
-                var productos = _productService.getAllProducts();
+                //1. Mensaje bienvenida.
+                ConsoleUI.ShowHeader("BIENVENIDO");
 
-                foreach (var product in productos)
-                {
-                    Console.WriteLine($"{product.ProductId} | {product.Description} | {product.EstatusId}");
-                }
+                //2. Login
+                User user = await Login();
+
+                
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ConsoleUI.Error(ex.Message);
             }
 
         }
 
 
 
+        public async Task<User> Login()
+        {
+            const int LIMIT_LOGIN_TRY = 3;
+            int count = 0;
+
+            while (count < LIMIT_LOGIN_TRY)
+            {
+                string identifier = ConsoleUI.ReadText("Ingresa tu usuario: ");
+
+                try
+                {
+                    // Si el login es exitoso, salimos de inmediato
+                    return await _userService.Login(identifier);
+                }
+                catch (BusinessException ex)
+                {
+
+                    // La cuenta esta bloqueada. Salir del while.
+                    if (ex.ErrorCode == BusinessExceptionErrorCode.CuentaBloqueda) throw;
+
+                    count++;
+                    ConsoleUI.Error($"Intento {count}/{LIMIT_LOGIN_TRY}: {ex.Message}");
+                }
+            }
+
+            // Si llegamos aquí, se agotaron los intentos
+            throw new BusinessException("Excediste el número de intentos permitidos.");
+
+        }
     }
 }
