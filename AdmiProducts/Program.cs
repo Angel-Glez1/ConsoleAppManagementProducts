@@ -1,0 +1,31 @@
+﻿using AdmiProducts.Controllers;
+using AdmiProducts.Repositories;
+using AdmiProducts.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+
+// 1. Cargar configuración desde appsettings.json
+var config = new ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+    .Build();
+var connectionString = config.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("No se encontró la cadena de conexión.");
+
+
+// 2. Configurar el contenedor de DI
+var services = new ServiceCollection();
+
+
+// 3. Registrar el repositorio: cuando alguien pida IProductoRepository el contenedor entrega un ProductoRepository
+services.AddTransient<IProductRepository>(_ => new ProductRepository(connectionString));
+services.AddTransient<ProductService>();
+services.AddTransient<MenuController>();
+
+
+// 4. Construir el contenedor (el IoC ya está listo)
+using ServiceProvider provider = services.BuildServiceProvider();
+
+// 5. Solicitar una instancia del MenuController al provider y iniciar la app
+var menuController = provider.GetRequiredService<MenuController>();
+menuController.Start();
