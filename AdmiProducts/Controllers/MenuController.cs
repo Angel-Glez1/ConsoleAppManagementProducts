@@ -61,7 +61,8 @@ namespace AdmiProducts.Controllers
                 {
 
                     // La cuenta esta bloqueada. Salir del while.
-                    if (ex.ErrorCode == BusinessExceptionErrorCode.CuentaBloqueda) throw;
+                    if (ex.ErrorCode == BusinessExceptionErrorCode.CuentaBloqueda) 
+                        throw;
 
                     count++;
                     ConsoleUI.Error($"Intento {count}/{LIMIT_LOGIN_TRY}: {ex.Message}");

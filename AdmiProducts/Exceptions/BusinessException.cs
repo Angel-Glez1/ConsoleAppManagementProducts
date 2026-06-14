@@ -7,7 +7,9 @@ namespace AdmiProducts.Exceptions
 
     public enum BusinessExceptionErrorCode
     {
-        CuentaBloqueda = 0
+        CuentaBloqueda = 0,
+        Otros = 1
+
     }
 
     /// <summary>
@@ -18,7 +20,7 @@ namespace AdmiProducts.Exceptions
     {
 
 
-        public BusinessExceptionErrorCode ErrorCode { get; set; }
+        public BusinessExceptionErrorCode ErrorCode { get; set; } = BusinessExceptionErrorCode.Otros;
 
         public BusinessException(string message) : base(message) { }
 
