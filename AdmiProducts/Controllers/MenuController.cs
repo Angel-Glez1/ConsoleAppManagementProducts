@@ -32,7 +32,7 @@ namespace AdmiProducts.Controllers
                 //2. Login
                 User user = await Login();
 
-                
+                Console.WriteLine($"Hola! {user.Name}");
             }
             catch (Exception ex)
             {
