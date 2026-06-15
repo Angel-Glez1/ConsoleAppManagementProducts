@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdmiProducts.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -20,10 +21,11 @@ namespace AdmiProducts.Utils
 
         public static void ShowMenu()
         {
+            Console.Clear();
             ShowHeader("SISTEMA DE INVENTARIO");
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("[1] Insertar producto");
-            Console.WriteLine("[2] Consultar productos");
+            Console.WriteLine("[1] Consultar productos");
+            Console.WriteLine("[2] Insertar producto");
             Console.WriteLine("[3] Actualizar producto");
             Console.WriteLine("[4] Eliminar producto");
             Console.WriteLine("[5] Salir");
@@ -51,16 +53,28 @@ namespace AdmiProducts.Utils
 
         public static void Info(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($"➜ {message}");
             Console.ResetColor();
         }
+
+        public static void MsgUser(string text)
+        {
+            Console.BackgroundColor = ConsoleColor.DarkGray;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(text);
+            Console.ResetColor();
+        }
+
 
         public static string ReadText(string label)
         {
             Console.Write($"{label}");
             return Console.ReadLine()!;
         }
+
+        
 
         public static int ReadInt(string label)
         {

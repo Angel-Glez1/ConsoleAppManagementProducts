@@ -1,6 +1,6 @@
 ﻿using AdmiProducts.Models;
 using AdmiProducts.Models.Enums;
-using AdmiProducts.Repositories.interfaces;
+using AdmiProducts.Repositories.Interfaces;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace AdmiProducts.Repositories
             User? user = null;
 
             // 1. Crear objeto con el pollConection y abrir la conexcion
-            await using var connection = new SqlConnection(_connectionstring);
+            using var connection = new SqlConnection(_connectionstring);
             await connection.OpenAsync();
 
             // 2. Crea y ejecuta la query

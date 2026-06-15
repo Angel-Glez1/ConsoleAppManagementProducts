@@ -1,7 +1,7 @@
 ﻿using AdmiProducts.Exceptions;
 using AdmiProducts.Models;
 using AdmiProducts.Models.Enums;
-using AdmiProducts.Repositories.interfaces;
+using AdmiProducts.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;

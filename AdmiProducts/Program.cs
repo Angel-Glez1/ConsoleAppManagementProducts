@@ -1,6 +1,6 @@
 ﻿using AdmiProducts.Controllers;
 using AdmiProducts.Repositories;
-using AdmiProducts.Repositories.interfaces;
+using AdmiProducts.Repositories.Interfaces;
 using AdmiProducts.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,9 +18,10 @@ var connectionString = config.GetConnectionString("DefaultConnection") ?? throw 
 var services = new ServiceCollection();
 
 
-// 3. Registrar el repositorio: cuando alguien pida IProductoRepository el contenedor entrega un ProductoRepository
+// 3. Registrar los repositorios y clases para usar DI
 services.AddTransient<IProductRepository>(_ => new ProductRepository(connectionString));
 services.AddTransient<IUserRepository>(_ => new UserRepository(connectionString));
+services.AddTransient<IBitacoraProducts>(_ => new BitacoraProductsRepository(connectionString));
 services.AddTransient<ProductService>();
 services.AddTransient<UserService>();
 services.AddTransient<MenuController>();

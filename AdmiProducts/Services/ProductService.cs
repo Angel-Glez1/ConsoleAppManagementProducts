@@ -1,5 +1,5 @@
 ﻿using AdmiProducts.Models;
-using AdmiProducts.Repositories.interfaces;
+using AdmiProducts.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,18 +9,22 @@ namespace AdmiProducts.Services
     public class ProductService
     {
 
-        private readonly IProductRepository _repository;
+        private readonly IProductRepository _productrepository;
+        private readonly IBitacoraProducts _bitacorarepository;
 
 
-        public ProductService(IProductRepository repository)
+        public ProductService(IProductRepository productrepository, IBitacoraProducts bitacorarepository)
         {
-            _repository = repository;
+            _productrepository = productrepository;
+            _bitacorarepository = bitacorarepository;
         }
 
         public async Task<List<Product>> getAllProducts()
         {
-            return await _repository.FindAll();
+            return await _productrepository.FindAll();
         }
+
+
 
 
     }

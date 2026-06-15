@@ -5,6 +5,7 @@ using AdmiProducts.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 
 namespace AdmiProducts.Controllers
 {
@@ -32,7 +33,49 @@ namespace AdmiProducts.Controllers
                 //2. Login
                 User user = await Login();
 
-                Console.WriteLine($"Hola! {user.Name}");
+                //3. Mostrar menu principal
+                bool showMenu = true;
+
+                while (showMenu)
+                {
+
+                    ConsoleUI.ShowMenu();
+                    ConsoleUI.MsgUser($"Usuario: {user.Name}");
+                    int option = ConsoleUI.ReadInt("Selecciona una opción: ");
+
+
+                    switch (option)
+                    {
+
+                        case 1:
+                            // Consultar productos
+                            break;
+
+                        case 2:
+                            // Insertar
+                            break;
+
+                        case 3:
+                            // Actualizar
+                            break;
+
+                        case 4:
+                            // Eliminar
+                            break;
+
+                        case 5:
+                            showMenu = false;
+                            ConsoleUI.MsgUser($"Usuario: {user.Name}");
+                            break;
+
+                        default:
+                            ConsoleUI.Error($"El número: {option}, no es una opción valida.");
+                            Thread.Sleep(2000);
+                            break;
+                    }
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -61,7 +104,7 @@ namespace AdmiProducts.Controllers
                 {
 
                     // La cuenta esta bloqueada. Salir del while.
-                    if (ex.ErrorCode == BusinessExceptionErrorCode.CuentaBloqueda) 
+                    if (ex.ErrorCode == BusinessExceptionErrorCode.CuentaBloqueda)
                         throw;
 
                     count++;

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AdmiProducts.Repositories.interfaces
+namespace AdmiProducts.Repositories.Interfaces
 {
     public interface IUserRepository
     {
