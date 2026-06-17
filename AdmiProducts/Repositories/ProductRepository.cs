@@ -2,11 +2,6 @@
 using AdmiProducts.Models.Enums;
 using AdmiProducts.Repositories.Interfaces;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection.PortableExecutable;
-using System.Text;
 
 namespace AdmiProducts.Repositories
 {
@@ -14,17 +9,15 @@ namespace AdmiProducts.Repositories
     {
         private readonly string _connectionString;
 
-
         public ProductRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-
-        public async Task<List<Product>> FindAll()
+        public async Task<List<Product>> FindAllAsync()
         {
-            List<Product> products = new List<Product>();
-            string query = @"
+            var products = new List<Product>();
+            const string query = @"
                 SELECT 
                      productId
                     ,description
@@ -34,37 +27,29 @@ namespace AdmiProducts.Repositories
                 ORDER BY 1 DESC
             ";
 
-
-            // 1. Crear objeto para la conxion.
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-
-            // 2. Ejecutamos la query y obtenemos resultados
             using var command = new SqlCommand(query, connection);
-            using var result = await command.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync();
 
-
-            // 3. Leer resultado de la query, obtener filas y agregar a la lista de productos un nuevo producto.
-            while (await result.ReadAsync())
+            while (await reader.ReadAsync())
             {
-                int productId = result.GetInt32(0);
-                string description = result.GetString(1);
-                int quantity = result.GetInt32(2);
-                Estatus estatusId = (Estatus)result.GetInt32(3);
+                int productId = reader.GetInt32(0);
+                string description = reader.GetString(1);
+                int quantity = reader.GetInt32(2);
+                Estatus estatusId = (Estatus)reader.GetInt32(3);
 
                 products.Add(new Product(productId, description, quantity, estatusId));
             }
 
-            // Regresamos una lista de producto
             return products;
         }
 
-        public async Task<Product?> FindById(int id)
+        public async Task<Product?> FindByIdAsync(int id)
         {
-            Product? _product = null;
-            string query = @"
-                 SELECT 
+            const string query = @"
+                SELECT 
                      productId
                     ,description
                     ,Quantity
@@ -73,68 +58,52 @@ namespace AdmiProducts.Repositories
                 AND productId = @id
             ";
 
-            // Preparar la conexión y la abré.
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-
-            // Prepera la query para su ejecución
             using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@id", id);
 
-            // Ejecuta la query en base de datos.
             using var reader = await command.ExecuteReaderAsync();
 
-            bool existsProduct = reader.HasRows;
-            if (!existsProduct)
-                return _product;
-
-
-            // Leer resultado
-            while (await reader.ReadAsync())
+            if (await reader.ReadAsync())
             {
                 int productId = reader.GetInt32(0);
                 string description = reader.GetString(1);
                 int quantity = reader.GetInt32(2);
                 Estatus estatusId = (Estatus)reader.GetInt32(3);
 
-                _product = new Product(productId, description, quantity, estatusId);
+                return new Product(productId, description, quantity, estatusId);
             }
 
-            return _product;
+            return null;
         }
 
-
-        public async Task<int> Update(Product product)
+        public async Task<int> UpdateAsync(Product product)
         {
-            string query = @"
+            const string query = @"
                 UPDATE Products SET 
                      description = @description
                     ,quantity = @quantity
                 WHERE productId = @id
+                AND estatusId = 1
             ";
 
-            // Preprar objeto para conexión y abrirla.
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // Crear un objeto para poder configurar la query.
             using var command = new SqlCommand(query, connection);
-
-            // Remplaza valores para evitar Sql Inyectión.
             command.Parameters.AddWithValue("@description", product.Description);
             command.Parameters.AddWithValue("@quantity", product.Quantity);
             command.Parameters.AddWithValue("@id", product.ProductId);
 
-            int rowsAffected = await command.ExecuteNonQueryAsync();
-            return rowsAffected;
+            return await command.ExecuteNonQueryAsync();
         }
 
-
-        public async Task<int> Create(string description, int quantity)
+        public async Task<int> CreateAsync(string description, int quantity)
         {
-            string query = @"
-             INSERT INTO Products (
+            const string query = @"
+                INSERT INTO Products (
                      [description]
                     ,[quantity]
                     ,[estatusId]
@@ -147,44 +116,33 @@ namespace AdmiProducts.Repositories
                 )
             ";
 
-            // Preprar objeto para conexión y abrirla.
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // Crear un objeto para poder configurar la query.
             using var command = new SqlCommand(query, connection);
-
-            // Remplaza valores para evitar Sql Inyectión.
             command.Parameters.AddWithValue("@description", description);
             command.Parameters.AddWithValue("@quantity", quantity);
-            command.Parameters.AddWithValue("@estatusId", Estatus.Activo);
+            command.Parameters.AddWithValue("@estatusId", (int)Estatus.Activo);
 
-            var rowsAffected = await command.ExecuteScalarAsync();
-            return Convert.ToInt32(rowsAffected);
+            var newProductId = await command.ExecuteScalarAsync();
+            return Convert.ToInt32(newProductId);
         }
 
-
-        public async Task<int> Delete(int id)
+        public async Task<int> DeleteAsync(int id)
         {
-            string query = @"
+            const string query = @"
                 UPDATE Products SET
                     estatusId = 2
                 WHERE productId = @id
-                
             ";
 
-            // Preprar objeto para conexión y abrirla.
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // Crear un objeto para poder configurar la query.
             using var command = new SqlCommand(query, connection);
-
-            // Remplaza valores para evitar Sql Inyectión.
             command.Parameters.AddWithValue("@id", id);
 
-            int rowsAffected = await command.ExecuteNonQueryAsync();
-            return rowsAffected;
+            return await command.ExecuteNonQueryAsync();
         }
     }
 }

@@ -7,11 +7,10 @@ namespace AdmiProducts.Repositories.Interfaces
 {
     public interface IProductRepository
     {
-        Task<List<Product>> FindAll();
-        
-        Task<Product?> FindById(int id);
-        Task<int> Create(string description, int quantity);
-        Task<int> Update(Product product);
-        Task<int> Delete(int id);
+        Task<List<Product>> FindAllAsync();
+        Task<Product?> FindByIdAsync(int productId);
+        Task<int> CreateAsync(string description, int quantity);
+        Task<int> UpdateAsync(Product product);
+        Task<int> DeleteAsync(int productId);
     }
 }

@@ -1,93 +1,77 @@
 ﻿using AdmiProducts.Exceptions;
 using AdmiProducts.Models;
 using AdmiProducts.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AdmiProducts.Services
 {
     public class ProductService
     {
+        private const string ERROR_TRANSACCION_SQL = "No se logró realizar la transacción en la base de datos.";
 
-        private readonly IProductRepository _productrepository;
+        private readonly IProductRepository _productRepository;
 
-
-        public ProductService(IProductRepository productrepository)
+        public ProductService(IProductRepository productRepository)
         {
-            _productrepository = productrepository;
+            _productRepository = productRepository;
         }
 
         public async Task<List<Product>> FindAllAsync()
         {
-            return await _productrepository.FindAll();
+            return await _productRepository.FindAllAsync();
         }
 
-
+        public async Task<Product?> FindByIdAsync(int productId)
+        {
+            return await _productRepository.FindByIdAsync(productId);
+        }
 
         public async Task<int> CreateAsync(string description, int quantity)
         {
-
-            // Validar que la description no se un string vacio
             if (string.IsNullOrEmpty(description))
                 throw new BusinessException("El nombre del producto es obligatorio.");
 
-
-
-            // Validar que el stock no sea negativo o 0.
             if (quantity <= 0)
                 throw new BusinessException("El stock no puede ser 0 o un número negativo.");
 
+            var result = await _productRepository.CreateAsync(description, quantity);
 
-            var result = await _productrepository.Create(description, quantity);
-
-            // Validar si el producto se inserto en DB.
             if (result == 0)
-                throw new BusinessException("No se logro realizar la trasaccion del SQL");
+                throw new BusinessException(ERROR_TRANSACCION_SQL);
 
             return result;
         }
-
 
         public async Task<int> UpdateAsync(Product product)
         {
-            // Validar que la description no se un string vacio
             if (string.IsNullOrEmpty(product.Description))
                 throw new BusinessException("El nombre del producto es obligatorio.");
 
-
-
-            // Validar que el stock no sea negativo o 0.
             if (product.Quantity <= 0)
                 throw new BusinessException("El stock no puede ser 0 o un número negativo.");
 
+            var existente = await _productRepository.FindByIdAsync(product.ProductId);
+            if (existente is null)
+                throw new BusinessException($"El producto con el id: {product.ProductId} no existe.");
 
-            var result = await _productrepository.Update(product);
+            var result = await _productRepository.UpdateAsync(product);
 
-            // Validar si el producto se inserto en DB.
             if (result == 0)
-                throw new BusinessException("No se logro realizar la trasaccion del SQL");
+                throw new BusinessException(ERROR_TRANSACCION_SQL);
 
             return result;
         }
 
-
-
         public async Task DeleteAsync(int productId)
         {
-
-            // Validar si el id solicitado existe
-            var product = await _productrepository.FindById(productId);
+            var product = await _productRepository.FindByIdAsync(productId);
 
             if (product is null)
                 throw new BusinessException($"El producto con el id: {productId} no existe.");
 
-
-            int result = await _productrepository.Delete(productId);
+            int result = await _productRepository.DeleteAsync(productId);
 
             if (result == 0)
-                throw new BusinessException("No se logro realizar la trasaccion del SQL");
+                throw new BusinessException(ERROR_TRANSACCION_SQL);
         }
     }
-
 }

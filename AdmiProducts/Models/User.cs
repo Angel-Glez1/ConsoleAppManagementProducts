@@ -12,7 +12,6 @@ namespace AdmiProducts.Models
         public string Name { get; set; } = String.Empty;
         public Estatus EstatusId { get; set; }
 
-
         public User() { }
 
         public User(int userId, string identifier, string name, Estatus estatusId)

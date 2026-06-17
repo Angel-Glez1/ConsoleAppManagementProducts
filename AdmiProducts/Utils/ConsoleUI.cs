@@ -122,6 +122,7 @@ namespace AdmiProducts.Utils
             if (!lista.Any())
             {
                 Console.WriteLine($"No hay registros para mostrar");
+                return;
             }
 
             // Calcular el ancho de cada columna: el mayor entre el header y los valores

@@ -12,6 +12,7 @@ namespace AdmiProducts.Models
         public int Quantity { get; set; }
         public Estatus EstatusId { get; set; }
 
+        public Product() { }
 
         public Product(int productId, string description, int quantity, Estatus estatusId) 
         { 

@@ -4,12 +4,10 @@ using System.Text;
 
 namespace AdmiProducts.Exceptions
 {
-
     public enum BusinessExceptionErrorCode
     {
-        CuentaBloqueda = 0,
-        Otros = 1
-
+        Otros = 0,           // valor neutral — nunca debe tener significado especial
+        CuentaBloqueda = 1
     }
 
     /// <summary>
@@ -18,13 +16,12 @@ namespace AdmiProducts.Exceptions
     /// </summary>
     public class BusinessException : Exception
     {
-
-
-        public BusinessExceptionErrorCode ErrorCode { get; set; } = BusinessExceptionErrorCode.Otros;
+        public BusinessExceptionErrorCode ErrorCode { get; } = BusinessExceptionErrorCode.Otros;
 
         public BusinessException(string message) : base(message) { }
 
-        public BusinessException(string message, BusinessExceptionErrorCode errorCode) : base(message) { 
+        public BusinessException(string message, BusinessExceptionErrorCode errorCode) : base(message)
+        {
             ErrorCode = errorCode;
         }
     }
