@@ -23,19 +23,27 @@ namespace AdmiProducts.Services
         {
 
             if (string.IsNullOrWhiteSpace(identifier))
+            {
                 throw new BusinessException("El usuario no puede estar vacío.");
+            }
 
 
             var user = await _userRepository.GetUserByIdentifier(identifier);
 
             if (user is null)
+            {
                 throw new BusinessException("No existe esa cuenta.");
+            }
+
 
             if (user.EstatusId == Estatus.Baja)
+            {
                 throw new BusinessException(
-                    "Tu cuenta está bloqueada. Contacta al administrador.", 
+                    "Tu cuenta está bloqueada. Contacta al administrador.",
                     errorCode: BusinessExceptionErrorCode.CuentaBloqueda
                 );
+
+            }
 
             return user;
         }

@@ -21,9 +21,10 @@ var services = new ServiceCollection();
 // 3. Registrar los repositorios y clases para usar DI
 services.AddTransient<IProductRepository>(_ => new ProductRepository(connectionString));
 services.AddTransient<IUserRepository>(_ => new UserRepository(connectionString));
-services.AddTransient<IBitacoraProducts>(_ => new BitacoraProductsRepository(connectionString));
+services.AddTransient<IBitacoraProductsRepository>(_ => new BitacoraProductsRepository(connectionString));
 services.AddTransient<ProductService>();
 services.AddTransient<UserService>();
+services.AddTransient<BitacoraProductService>();
 services.AddTransient<MenuController>();
 
 

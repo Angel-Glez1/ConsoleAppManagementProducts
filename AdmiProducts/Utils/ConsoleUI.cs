@@ -28,7 +28,8 @@ namespace AdmiProducts.Utils
             Console.WriteLine("[2] Insertar producto");
             Console.WriteLine("[3] Actualizar producto");
             Console.WriteLine("[4] Eliminar producto");
-            Console.WriteLine("[5] Salir");
+            Console.WriteLine("[5] Bitacora de un premio");
+            Console.WriteLine("[6] Salir");
             Console.ResetColor();
             Console.WriteLine();
             Console.WriteLine(new string('-', Width));
@@ -36,10 +37,9 @@ namespace AdmiProducts.Utils
 
         public static void Success(string message)
         {
-
-            Console.BackgroundColor = ConsoleColor.Green;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"✓ {message}");
+            Console.BackgroundColor = ConsoleColor.DarkGreen;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine($"[OK]::{message}".Trim());
             Console.ResetColor();
         }
 
@@ -47,15 +47,15 @@ namespace AdmiProducts.Utils
         {
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"✗ {message}");
+            Console.WriteLine($"[ERROR]::{message}".Trim());
             Console.ResetColor();
         }
 
         public static void Info(string message)
         {
             Console.BackgroundColor = ConsoleColor.Yellow;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"➜ {message}");
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine($"[INFO]::{message}".Trim());
             Console.ResetColor();
         }
 
@@ -109,6 +109,51 @@ namespace AdmiProducts.Utils
         public static void Text(string text)
         {
             Console.WriteLine(text);
+        }
+
+
+        // En ConsoleUI.cs
+        public static void ShowTable<T>(IEnumerable<T> items, params (string Header, Func<T, object> Selector)[] columns)
+        {
+            // Transforma el IEnumerable en una lista
+            var lista = items.ToList();
+
+            // Valida si la lista esta vacia
+            if (!lista.Any())
+            {
+                Console.WriteLine($"No hay registros para mostrar");
+            }
+
+            // Calcular el ancho de cada columna: el mayor entre el header y los valores
+            var anchos = columns.Select(col =>
+            {
+                int maxValor = lista.Max(item => col.Selector(item)?.ToString()?.Length ?? 0);
+                return Math.Max(col.Header.Length, maxValor);
+            }).ToArray();
+
+
+            Console.WriteLine(new string('-', anchos.Sum() + (columns.Length * 3)));
+
+            // Imprimir encabezado
+            for (int i = 0; i < columns.Length; i++)
+            {
+                Console.Write($"{columns[i].Header.PadRight(anchos[i])} | ");
+            }
+            Console.WriteLine();
+
+            // Línea separadora
+            Console.WriteLine(new string('-', anchos.Sum() + (columns.Length * 3)));
+
+            // Imprimir filas
+            foreach (var item in lista)
+            {
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    var valor = columns[i].Selector(item)?.ToString() ?? "";
+                    Console.Write($"{valor.PadRight(anchos[i])} | ");
+                }
+                Console.WriteLine();
+            }
         }
     }
 

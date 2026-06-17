@@ -31,6 +31,7 @@ namespace AdmiProducts.Repositories
                     ,Quantity
                     ,estatusId 
                 FROM Products WHERE estatusId = 1
+                ORDER BY 1 DESC
             ";
 
 
@@ -104,21 +105,45 @@ namespace AdmiProducts.Repositories
         }
 
 
-        public Task<int> Update(Product product)
+        public async Task<int> Update(Product product)
         {
-            throw new NotImplementedException();
+            string query = @"
+                UPDATE Products SET 
+                     description = @description
+                    ,quantity = @quantity
+                WHERE productId = @id
+            ";
+
+            // Preprar objeto para conexión y abrirla.
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            // Crear un objeto para poder configurar la query.
+            using var command = new SqlCommand(query, connection);
+
+            // Remplaza valores para evitar Sql Inyectión.
+            command.Parameters.AddWithValue("@description", product.Description);
+            command.Parameters.AddWithValue("@quantity", product.Quantity);
+            command.Parameters.AddWithValue("@id", product.ProductId);
+
+            int rowsAffected = await command.ExecuteNonQueryAsync();
+            return rowsAffected;
         }
 
 
         public async Task<int> Create(string description, int quantity)
         {
             string query = @"
-                INSERT INTO [dbo].[Products] (
+             INSERT INTO Products (
                      [description]
                     ,[quantity]
-                ) VALUES (
+                    ,[estatusId]
+                )
+                OUTPUT INSERTED.productId
+                VALUES (
                     @description,
-                    @quantity
+                    @quantity,
+                    @estatusId
                 )
             ";
 
@@ -132,9 +157,10 @@ namespace AdmiProducts.Repositories
             // Remplaza valores para evitar Sql Inyectión.
             command.Parameters.AddWithValue("@description", description);
             command.Parameters.AddWithValue("@quantity", quantity);
+            command.Parameters.AddWithValue("@estatusId", Estatus.Activo);
 
-            int rowsAffected = await command.ExecuteNonQueryAsync();
-            return rowsAffected;
+            var rowsAffected = await command.ExecuteScalarAsync();
+            return Convert.ToInt32(rowsAffected);
         }
 
 
